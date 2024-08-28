@@ -1,0 +1,21 @@
+names:
+- Kamalam
+- Karanda Magudam
+- Karudaasanam
+- Padmasanam
+- Soolam
+- Sugasanam
+- Udukkai
+- Varadham
+- Yogasanam
+- abaya
+nc: 10
+roboflow:
+  license: CC BY 4.0
+  project: statueist
+  url: https://universe.roboflow.com/dd-rwbaw/statueist/dataset/4
+  version: 4
+  workspace: dd-rwbaw
+test: test/images
+train: train/images
+val: valid/images
