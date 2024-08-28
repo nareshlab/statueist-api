@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO Object Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YOLO Object Detection</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="imageInput" name="image" accept="image/*" required />
+            <button type="submit">Upload and Detect</button>
+        </form>
+
+        <div class="result" id="result">
+            <h3>Detected Class Names:</h3>
+            <ul id="classNames"></ul>
+            <h3>Output Image:</h3>
+            <img id="outputImage" alt="Detected output will appear here." />
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById("imageInput");
+            formData.append("image", fileInput.files[0]);
+
+            const response = await fetch("/detect", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Display class names
+                const classNamesElement = document.getElementById("classNames");
+                classNamesElement.innerHTML = "";  // Clear previous content
+                data.class_names.forEach(name => {
+                    const li = document.createElement("li");
+                    li.textContent = name;
+                    classNamesElement.appendChild(li);
+                });
+
+                // Display output image
+                const outputImageElement = document.getElementById("outputImage");
+                outputImageElement.src = `data:image/jpeg;base64,${data.image}`;
+            } else {
+                alert("Failed to upload and detect image.");
+            }
+        });
+    </script>
+</body>
+</html>
