@@ -1,59 +1,53 @@
 import streamlit as st
-from ultralytics import YOLO
 import os
 import base64
+from ultralytics import YOLO
 from PIL import Image
 
-# Set a directory to temporarily save the uploaded images
+# Set up paths and configuration
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load the YOLO model
-model = YOLO("best.pt")
+model = YOLO("best.pt")  # pretrained YOLOv8n model
 
-def save_image(uploaded_file):
-    filename = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
-    with open(filename, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-    return filename
+# Function to detect objects and process results
+def detect_objects(image):
+    # Save the uploaded image
+    filename = "uploaded_image.jpg"
+    image_path = os.path.join(UPLOAD_FOLDER, filename)
+    image.save(image_path)
 
-def perform_detection(image_path):
-    # Run YOLO detection model on the saved image
-    results = model(image_path)
+    # Run the YOLO detection model on the saved image
+    results = model(image_path)  # return a list of Results objects
 
+    # Extract detected class names
+    class_names = []
     for result in results:
         class_names = [model.names[int(cls)] for cls in result.boxes.cls]
-        result.save(filename="output.jpg")
-    
-    return class_names
+        result.save(filename="output.jpg")  # Save the output image
 
-def get_base64_image(image_path):
-    with open(image_path, "rb") as image_file:
+    # Encode the output image to base64 string
+    with open("output.jpg", "rb") as image_file:
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
-    return encoded_image
 
-# Streamlit UI
+    os.remove(image_path)  # Clean up uploaded image
+    return class_names, encoded_image
+
+# Streamlit app
 st.title("Object Detection with YOLO")
-st.write("Upload an image to perform object detection")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image_path = save_image(uploaded_file)
-    st.image(Image.open(image_path), caption="Uploaded Image", use_column_width=True)
+    # Display the uploaded image
+    st.image(uploaded_file, caption="Uploaded Image.", use_column_width=True)
 
-    if st.button("Detect Objects"):
-        class_names = perform_detection(image_path)
-        encoded_image = get_base64_image("output.jpg")
+    # Perform object detection
+    class_names, encoded_image = detect_objects(uploaded_file)
 
-        st.write(f"Detected class names: {', '.join(class_names)}")
-        st.image("output.jpg", caption="Detected Objects", use_column_width=True)
+    # Display results
+    st.write("Detected class names:", class_names)
 
-        # Optionally display the base64 string
-        st.text_area("Base64 Encoded Image", encoded_image)
-
-    # Clean up the uploaded and output files
-    if os.path.exists(image_path):
-        os.remove(image_path)
-    if os.path.exists("output.jpg"):
-        os.remove("output.jpg")
+    # Convert base64-encoded image to displayable format
+    st.image(base64.b64decode(encoded_image), caption="Detected Objects Image.", use_column_width=True)
