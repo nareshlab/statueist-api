@@ -1,21 +1,22 @@
+# app.py
+
 import streamlit as st
 import os
 import base64
 from ultralytics import YOLO
 from PIL import Image
 
-# Set up paths and configuration
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Ensure the model file is in the correct directory or provide the correct path
+MODEL_PATH = 'best.pt'
 
 # Load the YOLO model
-model = YOLO("best.pt")  # pretrained YOLOv8n model
+model = YOLO(MODEL_PATH)  # Make sure 'best.pt' is available in the deployment environment
 
-# Function to detect objects and process results
 def detect_objects(image):
     # Save the uploaded image
     filename = "uploaded_image.jpg"
-    image_path = os.path.join(UPLOAD_FOLDER, filename)
+    image_path = os.path.join('uploads', filename)
+    os.makedirs('uploads', exist_ok=True)
     image.save(image_path)
 
     # Run the YOLO detection model on the saved image
