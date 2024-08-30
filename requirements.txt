@@ -3,3 +3,6 @@ Werkzeug
 ultralytics
 gunicorn
 torch
+streamlit
+opencv-python
+Pillow
