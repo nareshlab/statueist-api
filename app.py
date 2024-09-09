@@ -11,7 +11,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Dictionary for class descriptions
+# Dictionary for class descriptions (same as your current code)
 class_descriptions = {
     'Kamalam': 'Kamalam, or the lotus, is a symbol of purity and beauty in Hindu iconography. It is often depicted as a seat or a base on which deities are seated. The lotus represents divine beauty and purity, emerging from the mud but remaining unstained. By including Kamalam in statues, it conveys the idea of spiritual purity and the transcendence of material impurities.',
     'Karanda Magudam': 'Karanda Magudam, or the Karanda crown, is a traditional headgear often seen in Hindu statues, particularly those of deities like Shiva and Vishnu. It is characterized by its unique shape resembling a bird’s beak. This crown symbolizes the divine authority and majesty of the deity. It emphasizes the deity\'s role as a supreme ruler who governs with wisdom and power.',
@@ -65,4 +65,4 @@ def detect():
     })
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
