@@ -1,0 +1,20 @@
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Environment variables
+.env
+
+# Flask uploads directory
+uploads/
+
+# Virtual environment
+venv/
+
+# Logs
+*.log
+
+# Dependency directories
+*.egg-info
+dist/
+build/
