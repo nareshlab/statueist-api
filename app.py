@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 # Set a directory to temporarily save the uploaded images
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -25,7 +25,7 @@ class_descriptions = {
     'Yogasanam': 'Yogasanam refers to a posture of meditation or yoga. It is often depicted in Hindu statues to show the deity in a state of profound meditation and spiritual practice. This posture conveys the deity’s mastery over yoga and meditation, emphasizing their spiritual insight and self-realization.',
     'abaya': 'Abhaya, or the gesture of fearlessness, is represented by a raised hand with the palm facing outward. It signifies protection and reassurance. In Hindu statues, the Abhaya gesture conveys the deity’s role in safeguarding devotees from fear and danger, providing them with a sense of security and divine protection.'
 
-    # Your descriptions here...
+    # Your descriptions
 }
 
 @app.route('/')
@@ -45,22 +45,22 @@ def detect():
     image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     image.save(image_path)
 
-    model = YOLO("best.pt")  # Ensure the path is correct
+    model = YOLO("best.pt")  # Ensure 'best.pt' is accessible
     results = model(image_path)  # return a list of Results objects
-
+    
     class_names = [model.names[int(cls)] for cls in results[0].boxes.cls]
     descriptions = [class_descriptions.get(name, "No description available") for name in class_names]
-
+    
     # Save the output image
-    output_image_path = os.path.join(app.config['UPLOAD_FOLDER'], "output.jpg")
+    output_image_path = "output.jpg"
     results[0].save(filename=output_image_path)
-
+    
     with open(output_image_path, "rb") as image_file:
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
-
+    
     os.remove(image_path)
     os.remove(output_image_path)
-
+    
     return jsonify({
         "class_names": class_names,
         "descriptions": descriptions,
@@ -68,4 +68,4 @@ def detect():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
